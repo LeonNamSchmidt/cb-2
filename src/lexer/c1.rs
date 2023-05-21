@@ -139,7 +139,7 @@ pub enum C1Token {
 
     // "//" <comment> "\n"
     #[regex("//([^(\n)]*)\n", logos::skip)]               
-
+    CPlusComment,
 
 
     // Logos requires one token variant to handle errors,
