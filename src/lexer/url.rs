@@ -27,9 +27,12 @@ impl Display for LinkText {
 #[derive(Logos, Debug, PartialEq)]
 pub enum URLToken {
     // TODO: Capture link definitions
+    //catch link with url
+    #[regex("<a([^>]*)href=\"([^\"]*)\"([^>]*)>([^<]*)</a([ \r\t\n]*)>", extract_link_info)]
     Link((LinkUrl, LinkText)),
 
     // TODO: Ignore all characters that do not belong to a link definition
+    #[regex("<([^>]*)>", logos::skip)]
     Ignored,
 
     // Catch any error
@@ -39,6 +42,15 @@ pub enum URLToken {
 
 /// Extracts the URL and text from a string that matched a Link token
 fn extract_link_info(lex: &mut Lexer<URLToken>) -> (LinkUrl, LinkText) {
-    // TODO: Implement extraction from link definition
-    todo!()
+    // TODO: Implement extraction from link definition 
+    let slice = lex.slice();
+    //get url out of Token
+    let url_start = slice.find("href=\"").unwrap() + 6;
+    let url_end = slice[url_start..slice.len()-1].find('"').unwrap();
+    let url = &slice[url_start..url_end];
+    //get linktext out of Token
+    let text_start = slice.find('>').unwrap() + 1;
+    let text_end = slice[text_start..slice.len()-1].find('<').unwrap();
+    let text = &slice[text_start..text_end];
+    (LinkUrl(url.to_string()), LinkText(text.to_string()))
 }
